@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>武汉不可移动文物地图</title>
+    <style>
+        html, body, #container {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .info-window {
+            min-width: 200px;
+            max-width: 300px;
+        }
+
+        .info-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .info-english {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .info-content {
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script src="https://webapi.amap.com/maps?v=2.0&key=4b6aa59823461071d3bc5fb65c4860e5"></script>
+    <script>
+        // 初始化地图
+        var map = new AMap.Map('container', {
+            viewMode: '3D', // 默认使用3D模式
+            zoom: 12, // 缩放级别
+            center: [114.305392, 30.593098], // 武汉市中心坐标
+            mapStyle: 'amap://styles/light' // 地图样式
+        });
+
+        // 武汉不可移动文物数据
+        var culturalRelics = [
+            {
+                name: '黄鹤楼',
+                english: 'Yellow Crane Tower',
+                position: [114.303569, 30.546584],
+                description: '黄鹤楼是武汉市的标志性建筑，始建于三国时期，历代屡毁屡建。现楼为1981年重建，位于蛇山之巅，享有"天下江山第一楼"的美誉。'
+            },
+            {
+                name: '武昌起义军政府旧址',
+                english: 'Site of the Wuchang Uprising Military Government',
+                position: [114.303704, 30.549764],
+                description: '又称红楼，是辛亥革命武昌起义的指挥中心，现为辛亥革命博物馆。建筑为西式红砖楼房，建于1909年。'
+            },
+            {
+                name: '汉口近代建筑群',
+                english: 'Modern Architectural Complex in Hankou',
+                position: [114.290454, 30.578453],
+                description: '包括江汉关大楼、汉口汇丰银行大楼等52处近代优秀历史建筑，集中体现了19世纪末至20世纪初武汉作为通商口岸的城市风貌。'
+            },
+            {
+                name: '归元寺',
+                english: 'Guiyuan Temple',
+                position: [114.253218, 30.554012],
+                description: '武汉四大佛教丛林之一，创建于清顺治十五年(1658年)，以建筑完美、雕塑绝妙、珍藏丰富著称。'
+            },
+            {
+                name: '古琴台',
+                english: 'Guqin Tai',
+                position: [114.26536, 30.55375],
+                description: '又名伯牙台，为纪念俞伯牙与钟子期"高山流水遇知音"的故事而建，是中国著名的音乐文化古迹。'
+            },
+            {
+                name: '武汉大学早期建筑',
+                english: 'Early Buildings of Wuhan University',
+                position: [114.357576, 30.536441],
+                description: '包括老图书馆、文学院、法学院等15处26栋建筑，建于上世纪30年代，融合中西建筑风格，是中国近代大学建筑的典范。'
+            },
+            {
+                name: '盘龙城遗址',
+                english: 'Panlongcheng Site',
+                position: [114.2675, 30.700833],
+                description: '商代早期城址，距今约3500年，是长江流域发现的第一座商代古城，对研究商文化在南方的发展具有重要意义。'
+            }
+        ];
+
+        // 创建矢量图标
+        var vectorIcon = new AMap.Icon({
+            size: new AMap.Size(24, 24),  // 图标大小
+            image: 'path://M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z M12,11.5c-1.38,0-2.5-1.12-2.5-2.5s1.12-2.5,2.5-2.5s2.5,1.12,2.5,2.5S13.38,11.5,12,11.5z',
+            imageSize: new AMap.Size(24, 24),  // 图标实际大小
+            imageOffset: new AMap.Pixel(0, 0)  // 图标偏移量
+        });
+
+        // 添加文物标记点
+        culturalRelics.forEach(function(relic) {
+            var marker = new AMap.Marker({
+                position: relic.position,
+                icon: vectorIcon,
+                title: relic.name,
+                offset: new AMap.Pixel(-12, -12),
+                map: map
+            });
+
+            // 创建信息窗口内容
+            var infoContent = document.createElement('div');
+            infoContent.className = 'info-window';
+
+            var title = document.createElement('div');
+            title.className = 'info-title';
+            title.innerHTML = relic.name;
+
+            var english = document.createElement('div');
+            english.className = 'info-english';
+            english.innerHTML = relic.english;
+
+            var content = document.createElement('div');
+            content.className = 'info-content';
+            content.innerHTML = relic.description;
+
+            infoContent.appendChild(title);
+            infoContent.appendChild(english);
+            infoContent.appendChild(content);
+
+            // 点击标记点显示信息窗口
+            marker.on('click', function() {
+                var infoWindow = new AMap.InfoWindow({
+                    content: infoContent,
+                    offset: new AMap.Pixel(0, -30)
+                });
+                infoWindow.open(map, marker.getPosition());
+            });
+        });
+
+        // 添加地图控件
+        map.addControl(new AMap.ControlBar({
+            showZoomBar: true,
+            showControlButton: true,
+            position: {
+                right: '10px',
+                top: '10px'
+            }
+        }));
+
+        // 添加比例尺
+        map.addControl(new AMap.Scale());
+    </script>
+</body>
+</html>
